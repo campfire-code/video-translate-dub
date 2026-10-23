@@ -1,0 +1,10 @@
+{
+  "id": "c08",
+  "slug": "video-translate-dub",
+  "name": "视频出海翻译配音",
+  "version": "3.1.1-campfire.1",
+  "repo": "campfire-code/video-translate-dub",
+  "license": "Apache-2.0",
+  "delivery": "launcher",
+  "upstream": { "repo": "Huanshere/VideoLingo", "license": "Apache-2.0" }
+}

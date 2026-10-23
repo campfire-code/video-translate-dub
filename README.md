@@ -1,3 +1,63 @@
+# 视频出海翻译配音（VideoLingo）
+
+> 篝火出品 · 收录于篝火 App 应用区 · 基于开源项目 [Huanshere/VideoLingo](https://github.com/Huanshere/VideoLingo)（Apache-2.0）
+
+把视频做成字幕翻译加配音：语音识别、字幕切分与翻译、双语字幕压进视频，并可选生成配音。在浏览器里的 Streamlit 页面操作，也可粘贴 YouTube 链接下载。
+
+## 下载与启动
+
+到 [Releases](https://github.com/campfire-code/video-translate-dub/releases/latest) 下载 `video-translate-dub_版本号_portable.zip`，解压到一个**路径里没有中文和空格**的文件夹。
+
+- **Windows**：双击「启动（Windows 双击）.bat」。
+- **Mac**：右键「启动（Mac 双击）.command」→「打开」。
+
+第一次启动会自动安装 uv、Python 3.12、依赖和 FFmpeg（上游用 static-ffmpeg 自动下载，不需要自己装 FFmpeg），完成后自动打开 http://localhost:8501 。以后启动很快。
+
+## 前置条件与占用
+
+- **大模型（必须自己准备）**：翻译和字幕切分要调用大模型。在页面左侧栏填写**接口地址、API Key、模型名**（OpenAI 兼容格式），也可直接编辑 `config.yaml`。模型需要能返回工作流要求的 JSON 结构，不合格时看 `output/gpt_log/error.json`。上游 README 推荐的接口地址是其合作方，篝火没有要求使用，请自行选择。
+- **密钥保存位置**：填写后保存在本机解压目录下的 `config.yaml`（明文）。不要把含密钥的 `config.yaml` 发给别人或上传到仓库。篝火检查了上游代码，没有发现把密钥打印到日志的写法（按关键字检索，非逐行审计）。
+- **语音识别**：默认在本机运行 Qwen3-ASR + ForcedAligner，首次使用会下载模型。Apple 芯片 Mac 走 MLX；Windows / Linux 有 NVIDIA 显卡会装 CUDA 版 PyTorch，没有显卡则用 CPU（更慢）；Intel Mac 用 CPU。也可在侧栏改用 ElevenLabs 或 MAI-Transcribe-2（音频会发给对应服务商并可能收费）。
+- **配音**：可选 OpenAI、Fish Audio、SiliconFlow、GPT-SoVITS、Edge TTS、F5-TTS 等，部分需要对应服务的账号或自己部署，Edge TTS 不需要密钥。
+- **首次安装耗时与占用空间**：本机实测（Apple 芯片 Mac，使用清华 PyPI 镜像，网络良好）：安装依赖约 6.5 分钟，`.venv` 约 2.1 GB。安装阶段**没有**下载语音识别模型，Qwen3-ASR-1.7B（8-bit）和对齐模型在第一次识别时才下载，其耗时和占用**未实测**（上游未标注大小）。Windows / NVIDIA 的 CUDA 版 PyTorch 更大，**未实测**。建议预留 10 GB 以上磁盘。
+- **网络**：安装依赖、下载模型、下载 YouTube 视频都需要联网；启动脚本会询问是否使用国内 PyPI 镜像，模型和 YouTube 下载不走该镜像。
+- 启动脚本已关闭 Streamlit 的使用统计，并只监听本机（127.0.0.1），局域网内其他电脑访问不到。
+- 界面语言可在页面切换，默认配置为简体中文（`display_language: zh-CN`）。
+
+## 怎么用
+
+1. 启动后，在左侧栏填大模型接口、识别语言、目标语言。
+2. 上传视频，或粘贴 YouTube 链接下载。
+3. 依次执行识别、翻译、字幕生成，需要配音时再选配音方式并生成。
+4. 结果在解压目录的 `output/` 下，包含字幕文件和合成后的视频。
+
+## 已知限制（来自上游）
+
+- 背景噪音会影响识别和时间戳；数字和符号的时间戳可能不准。
+- 不会自动给不同说话人分配不同声音；混合语言的音频不保证每种语言都准确。
+- 配音的自然度和对口型取决于翻译、TTS 服务和语速，请人工检查成品。
+- 请只处理你有权使用和翻译的视频。
+
+## 验收用例
+
+| 操作 | 应得到 |
+|---|---|
+| 双击启动脚本，等待安装完成 | 浏览器自动打开 http://localhost:8501 的页面 |
+| 填好大模型接口，上传一段 1 分钟内的视频，目标语言选简体中文，执行识别和翻译 | `output/` 下生成字幕文件，页面可预览双语字幕 |
+
+## 和上游的区别
+
+- 仅新增中文说明、`campfire/` 启动脚本和篝火发布流程（`tool.json`、`.github/workflows/release.yml`），代码与上游一致。
+- 启动脚本用 uv 建 `.venv`（Python 3.12）后调用上游的 `installer.py`，再用 `streamlit run st.py` 启动；不使用上游的共享环境（`~/.venvs/videolingo`）。
+
+## 归属与许可证
+
+本仓库由**篝火**整理发布，是篝火 App 应用区收录的开源工具之一。软件全部功能与版权归 [Huanshere/VideoLingo](https://github.com/Huanshere/VideoLingo) 原作者所有，按 Apache-2.0 许可证再分发（见 `LICENSE`）。全部工具目录见 [toolkit-hub](https://github.com/campfire-code/toolkit-hub)。
+
+---
+
+以下为上游原始说明：
+
 <div align="center">
 
 <img src="/docs/logo.png" alt="VideoLingo Logo" height="140">
