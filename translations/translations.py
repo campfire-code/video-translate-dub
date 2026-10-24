@@ -60,17 +60,18 @@ def _streamlit_language():
         if query_language:
             return query_language
 
-        return _language_from_accept_language(st.context.headers.get("accept-language", ""))
+        # 篝火：不再按浏览器语言（Accept-Language）选择，默认界面语言由 config.yaml 的 display_language 决定
+        return None
     except Exception:
         return None
 
 
-def get_current_language(default="en"):
+def get_current_language(default="zh-CN"):
     return _streamlit_language() or _config_language() or default
 
 
 def init_display_language():
-    language = get_current_language(default="en")
+    language = get_current_language(default="zh-CN")
     try:
         import streamlit as st
 

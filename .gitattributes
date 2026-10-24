@@ -1,0 +1,6 @@
+# 篝火：发布包（git archive）不带非中文的说明文档
+translations/README.es.md export-ignore
+translations/README.fr.md export-ignore
+translations/README.ja.md export-ignore
+translations/README.ru.md export-ignore
+translations/README.zh-TW.md export-ignore
